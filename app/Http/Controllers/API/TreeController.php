@@ -43,7 +43,7 @@ class TreeController extends BaseController
             $longitude = $input['longitude'];
             $radius = $input['radius'];
 
-            $tree = Tree::selectRaw("INV_NOMBORIDS, INV_INVENTORI, INV_KOORDINAx, INV_KOORDINAY
+            $tree = Tree::selectRaw("INV_NOMBORIDS, INV_INVENTORI, INV_KOORDINAX, INV_KOORDINAY
                        cos( radians( 'INV_KOORDINAX' ) )
                        * cos( radians( 'INV_KOORDINAY' ) - radians(?)
                        ) + sin( radians(?) ) *
