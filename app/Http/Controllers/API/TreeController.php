@@ -75,7 +75,9 @@ class TreeController extends BaseController
                 
         } else {
             $tree = Tree::find($id);
-            return $this->handleResponse(new TreeResource($tree), 'Tree retrieved.');
+            $tree['id'] = $tree->INV_NOMBORIDS;
+            $tree['image_url'] = env('APP_URL').'/images/'.$tree->INV_ATTACHMEN;
+            return $this->handleResponse($tree, 'Tree retrieved.');
         }
         
         if (is_null($tree)) {

@@ -15,11 +15,7 @@ class Tree extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->INV_NOMBORIDS,
-            'inventori' => $this->INV_INVENTORI,
-            'kategori' => $this->INV_KATEGORI,
-            'qr_code' => $this->INV_QR
-
+            'id' => $this->INV_NOMBORIDS
         ];
     }
 }
