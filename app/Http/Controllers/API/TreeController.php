@@ -8,7 +8,7 @@ use App\Http\Resources\Tree as TreeResource;
 use App\Models\Tree;
 use Validator;
 use DB;
-
+use Image;
 
 class TreeController extends BaseController
 {
@@ -23,14 +23,33 @@ class TreeController extends BaseController
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'name' => 'required',
-            'details' => 'required'
+            'image' => 'required|image:jpeg,png,jpg|max:2048'
         ]);
+
         if($validator->fails()){
             return $this->handleError($validator->errors());       
         }
+
         $tree = Tree::create($input);
-        return $this->handleResponse(new TreeResource($tree), 'Tree created!');
+
+        $image = $request->file('image');
+        $filePath = public_path('/tree');
+        $imageName = time().'.'.$request->image->extension();
+     
+        $img = Image::make($image->path());
+        $img->resize(1024, 1024, function ($const) {
+            $const->aspectRatio();
+        })->save($filePath.'/'.$imageName);
+   
+        $filePath = public_path('/images');
+        $image->move($filePath, $imageName);
+
+        // update INV_ATTACHMEN
+        $updateTree = Tree::find($tree->INV_NOMBORIDS);
+        $updateTree->INV_ATTACHMEN = $imageName;
+        $updateTree->save();
+
+        return $this->handleResponse($updateTree, 'Tree created!');
     }
 
    
@@ -44,7 +63,7 @@ class TreeController extends BaseController
             $longitude = $input['longitude'];
             $radius = $input['radius'];
 
-            $tree = DB::select(DB::raw("SELECT * FROM (SELECT *, (((acos(sin(( :lat1 * pi() / 180)) * sin((`INV_KOORDINAY` * pi() / 180)) + cos(( :lat2 * pi() /180 ))* cos((`INV_KOORDINAY` * pi() / 180)) * cos((( :lon - `INV_KOORDINAX`) * pi()/180)))) * 180/pi()) * 60 * 1.1515 * 1.609344) AS distance FROM `LAN_INVENTORI`) myTable WHERE distance <= :radi"),
+            $tree = DB::select(DB::raw("SELECT INV_NOMBORIDS,INV_INVENTORI,INV_POKOKCODE,INV_KOORDINAY,INV_KOORDINAX, distance FROM (SELECT *, (((acos(sin(( :lat1 * pi() / 180)) * sin((`INV_KOORDINAX` * pi() / 180)) + cos(( :lat2 * pi() /180 ))* cos((`INV_KOORDINAX` * pi() / 180)) * cos((( :lon - `INV_KOORDINAY`) * pi()/180)))) * 180/pi()) * 60 * 1.1515 * 1.609344) AS distance FROM `LAN_INVENTORI`) myTable WHERE distance <= :radi"),
                 array(
                     'lat1' => $latitude,
                     'lat2' => $latitude,
@@ -55,7 +74,7 @@ class TreeController extends BaseController
             return $this->handleResponse($tree, $jumlah.' tree in radius of '.$radius.'KM retrieved.');
                 
         } else {
-            $tree = Tree::where('INV_NOMBORIDS', $id)->first();
+            $tree = Tree::find($id);
             return $this->handleResponse(new TreeResource($tree), 'Tree retrieved.');
         }
         
