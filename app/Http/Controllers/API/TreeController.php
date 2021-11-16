@@ -7,6 +7,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Http\Resources\Tree as TreeResource;
 use App\Models\Tree;
 use Validator;
+use DB;
 
 
 class TreeController extends BaseController
@@ -43,27 +44,24 @@ class TreeController extends BaseController
             $longitude = $input['longitude'];
             $radius = $input['radius'];
 
-            $tree = Tree::selectRaw("INV_NOMBORIDS, INV_INVENTORI, INV_KOORDINAX, INV_KOORDINAY
-                       cos( radians( 'INV_KOORDINAX' ) )
-                       * cos( radians( 'INV_KOORDINAY' ) - radians(?)
-                       ) + sin( radians(?) ) *
-                       sin( radians( INV_KOORDINAX ) ) )
-                     ) AS distance", [$latitude, $longitude, $latitude])
-                ->where('active', '=', 1)
-                ->having("distance", "<", $radius)
-                ->orderBy("distance",'asc')
-                ->offset(0)
-                ->limit(20)
-                ->get();
+            $tree = DB::select(DB::raw("SELECT * FROM (SELECT *, (((acos(sin(( :lat1 * pi() / 180)) * sin((`INV_KOORDINAY` * pi() / 180)) + cos(( :lat2 * pi() /180 ))* cos((`INV_KOORDINAY` * pi() / 180)) * cos((( :lon - `INV_KOORDINAX`) * pi()/180)))) * 180/pi()) * 60 * 1.1515 * 1.609344) AS distance FROM `LAN_INVENTORI`) myTable WHERE distance <= :radi"),
+                array(
+                    'lat1' => $latitude,
+                    'lat2' => $latitude,
+                    'lon' => $longitude,
+                    'radi' => $radius
+                ));
+            $jumlah = count($tree);
+            return $this->handleResponse($tree, $jumlah.' tree in radius of '.$radius.'KM retrieved.');
                 
         } else {
             $tree = Tree::where('INV_NOMBORIDS', $id)->first();
+            return $this->handleResponse(new TreeResource($tree), 'Tree retrieved.');
         }
         
         if (is_null($tree)) {
             return $this->handleError('Tree not found!');
         }
-        return $this->handleResponse(new TreeResource($tree), 'Tree retrieved.');
     }
     
 

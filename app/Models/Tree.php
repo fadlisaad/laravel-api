@@ -11,5 +11,5 @@ class Tree extends Model
 
     public $table = 'LAN_INVENTORI';
 
-    protected $fillable = [];    
+    protected $fillable = [];
 }
