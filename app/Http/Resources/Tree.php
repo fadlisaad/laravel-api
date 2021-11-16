@@ -15,11 +15,11 @@ class Tree extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'details' => $this->details,
-            'created_at' => $this->created_at->format('d/m/Y H:i:s'),
-            'updated_at' => $this->updated_at->format('d/m/Y H:i:s'),
+            'id' => $this->INV_NOMBORIDS,
+            'inventori' => $this->INV_INVENTORI,
+            'kategori' => $this->INV_KATEGORI,
+            'qr_code' => $this->INV_QR
+
         ];
     }
 }

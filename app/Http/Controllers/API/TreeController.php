@@ -33,9 +33,33 @@ class TreeController extends BaseController
     }
 
    
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $tree = Tree::find($id);
+        $input = $request->all();
+
+        if($input){
+            // get by radius from current location
+            $latitude = $input['latitude'];
+            $longitude = $input['longitude'];
+            $radius = $input['radius'];
+
+            $tree = Tree::selectRaw("INV_NOMBORIDS, INV_INVENTORI, INV_KOORDINAx, INV_KOORDINAY
+                       cos( radians( 'INV_KOORDINAX' ) )
+                       * cos( radians( 'INV_KOORDINAY' ) - radians(?)
+                       ) + sin( radians(?) ) *
+                       sin( radians( latitude ) ) )
+                     ) AS distance", [$latitude, $longitude, $latitude])
+                ->where('active', '=', 1)
+                ->having("distance", "<", $radius)
+                ->orderBy("distance",'asc')
+                ->offset(0)
+                ->limit(20)
+                ->get();
+                
+        } else {
+            $tree = Tree::where('INV_NOMBORIDS', $id)->first();
+        }
+        
         if (is_null($tree)) {
             return $this->handleError('Tree not found!');
         }

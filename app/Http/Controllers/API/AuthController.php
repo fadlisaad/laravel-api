@@ -43,8 +43,34 @@ class AuthController extends BaseController
         $user = User::create($input);
         $success['token'] =  $user->createToken('LaravelSanctumAuth')->plainTextToken;
         $success['name'] =  $user->name;
+        $success['email'] =  $auth->email;
    
         return $this->handleResponse($success, 'User successfully registered!');
+    }
+
+    public function changePassword(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|unique:users',
+            'password' => 'required'
+        ]);
+   
+        if($validator->fails()){
+            return $this->handleError($validator->errors());       
+        }
+   
+        $input = $request->all();
+        $input['password'] = bcrypt($input['password']);
+
+        $user->email = $input['email'];
+        $user->password = $input['password'];
+        $user->save();
+
+        $success['token'] =  $user->createToken('LaravelSanctumAuth')->plainTextToken;
+        $success['name'] =  $user->name;
+        $success['email'] =  $auth->email;
+   
+        return $this->handleResponse($success, 'Password successfully updated!');
     }
 
     public function profile(Request $request)
@@ -59,6 +85,19 @@ class AuthController extends BaseController
         else{ 
             return $this->handleError('Unauthorised.', ['error'=>'Unauthorised']);
         } 
+    }
+
+    public function users()
+    {
+        $users = User::all();
+   
+        return $this->handleResponse($users, 'User list retrieved');
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return $this->handleResponse($user, 'User deleted!');
     }
    
 }

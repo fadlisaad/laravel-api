@@ -9,8 +9,7 @@ class Tree extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name', 
-        'details'
-    ];    
+    public $table = 'LAN_INVENTORI';
+
+    protected $fillable = [];    
 }
