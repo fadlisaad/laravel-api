@@ -47,7 +47,7 @@ class TreeController extends BaseController
                        cos( radians( 'INV_KOORDINAX' ) )
                        * cos( radians( 'INV_KOORDINAY' ) - radians(?)
                        ) + sin( radians(?) ) *
-                       sin( radians( latitude ) ) )
+                       sin( radians( INV_KOORDINAX ) ) )
                      ) AS distance", [$latitude, $longitude, $latitude])
                 ->where('active', '=', 1)
                 ->having("distance", "<", $radius)
