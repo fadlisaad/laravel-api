@@ -68,7 +68,7 @@ class TreeController extends BaseController
         $qrcode .= "\n5. Koordinat X: ".$tree->INV_KOORDINAX;
         $qrcode .= "\n6. Koordinat Y: ".$tree->INV_KOORDINAY;
         $qrcode .= "\n7. Tarikh Daftar: ".$tree->INV_ENTRYDATE;
-        $qrcode .= "\n8. Sekiranya terdapat aduan mengenai pokok, tuan/puan boleh membuat aduan pada Sistem SisPAA Negeri Melaka di pautan : https://melaka.spab.gov.my/eApps/system/index.do. Sekian,terima kasih.";
+        $qrcode .= "\n\n. Sekiranya terdapat aduan mengenai pokok, tuan/puan boleh membuat aduan pada Sistem SisPAA Negeri Melaka di pautan : https://melaka.spab.gov.my/eApps/system/index.do. Sekian,terima kasih.";
 
         QrCode::size(500)
             ->format('png')
