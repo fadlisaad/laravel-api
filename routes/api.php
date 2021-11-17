@@ -18,3 +18,4 @@ Route::get('trees', [TreeController::class, 'index']);
 Route::get('trees/{id}', [TreeController::class, 'show']);
 Route::post('trees/nearby', [TreeController::class, 'show']);
 Route::post('trees', [TreeController::class, 'store']);
+Route::get('trees/qrcode/{id}', [TreeController::class, 'qrcode']);

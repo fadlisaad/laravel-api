@@ -9,6 +9,7 @@ use App\Models\Tree;
 use Validator;
 use DB;
 use Image;
+use QrCode;
 
 class TreeController extends BaseController
 {
@@ -18,7 +19,6 @@ class TreeController extends BaseController
         return $this->handleResponse(TreeResource::collection($trees), 'Tree have been retrieved!');
     }
 
-    
     public function store(Request $request)
     {
         $input = $request->all();
@@ -49,7 +49,30 @@ class TreeController extends BaseController
         $updateTree->INV_ATTACHMEN = $imageName;
         $updateTree->save();
 
+        // create qr code
+        $this->qrcode($tree->INV_NOMBORIDS);
+
         return $this->handleResponse($updateTree, 'Tree created!');
+    }
+
+    private function qrcode($id)
+    {
+        $tree = Tree::find($id);
+        $qrcode = null;
+
+        // generate QR code
+        $qrcode = "1. No Inventori: ".$tree->INV_NOMBORIDS;
+        $qrcode .= "\n2. Nama: ".$tree->INV_INVENTORI;
+        $qrcode .= "\n3. Lokasi: ".$tree->INV_LOKASLAND;
+        $qrcode .= "\n4. Usia: ".$tree->INV_AGEGTREES;
+        $qrcode .= "\n5. Koordinat X: ".$tree->INV_KOORDINAX;
+        $qrcode .= "\n6. Koordinat Y: ".$tree->INV_KOORDINAY;
+        $qrcode .= "\n7. Tarikh Daftar: ".$tree->INV_ENTRYDATE;
+        $qrcode .= "\n8. Sekiranya terdapat aduan mengenai pokok, tuan/puan boleh membuat aduan pada Sistem SisPAA Negeri Melaka di pautan : https://melaka.spab.gov.my/eApps/system/index.do. Sekian,terima kasih.";
+
+        QrCode::size(500)
+            ->format('png')
+            ->generate($qrcode, public_path('images/'.$id.'.png'));
     }
 
    
