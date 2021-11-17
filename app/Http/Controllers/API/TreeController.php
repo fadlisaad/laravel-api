@@ -71,8 +71,8 @@ class TreeController extends BaseController
         $qrcode .= "\n\n. Sekiranya terdapat aduan mengenai pokok, tuan/puan boleh membuat aduan pada Sistem SisPAA Negeri Melaka di pautan : https://melaka.spab.gov.my/eApps/system/index.do. Sekian,terima kasih.";
 
         QrCode::size(500)
-            ->format('png')
-            ->generate($qrcode, public_path('images/'.$id.'.png'));
+            ->format('jpg')
+            ->generate($qrcode, public_path('images/'.$id.'.jpg'));
     }
 
    
