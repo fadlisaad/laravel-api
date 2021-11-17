@@ -55,7 +55,7 @@ class TreeController extends BaseController
         return $this->handleResponse($updateTree, 'Tree created!');
     }
 
-    private function qrcode($id)
+    public function qrcode($id)
     {
         $tree = Tree::find($id);
         $qrcode = null;
